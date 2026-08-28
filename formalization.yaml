@@ -51,9 +51,11 @@ status:
     repetition and FIDE clock predicates, bounded forced mate, finite mate
     certificates, typed and strict textual FEN, UCI, canonical SAN, perft,
     rank-reflection symmetry, concrete standard perft regressions, and the
-    Isabelle mate-in-two witness. The capstone theorem advertises the generic
-    generator correspondence and the checked concrete result families. This
-    is a faithful standalone reimplementation rather than a line-by-line
+    Isabelle mate-in-two witness. The capstone theorem advertises the
+    full-rule `Chess.legalMoves_correct` generator correspondence and the
+    checked concrete result families. The Challenge and Solution expose the
+    complete production move/state core, including castling and en passant.
+    This is a faithful standalone reimplementation rather than a line-by-line
     translation: not every theorem name or generic proof inventory in the
     Isabelle entry is duplicated, and the exact unbounded dead-position
     predicate remains a logical definition separate from executable policy
@@ -119,7 +121,7 @@ review:
     independent mathematical review after intake.
 
 alignment:
-  namespace: "ChessKernel"
+  namespace: "Chess"
   statements:
     - source: "Chess_Move_Generator_Correct.legal_moves_correct"
       lean: "Chess.legalMoves_correct"
@@ -127,10 +129,12 @@ alignment:
       status: "proved"
       note: "The exhaustive candidate filter is equivalent to declarative legality."
     - source: "Chess_Move_Generator_Correct.legal_moves_correct"
-      lean: "ChessKernel.main_result"
+      lean: "Chess.legalMoves_correct"
       module: "Challenge.lean / Solution.lean"
       status: "proved"
-      note: "Compact self-contained registry projection of the full generator correspondence."
+      note: >-
+        Full-rule standalone registry surface of the production generator
+        theorem, including castling, en passant, promotion, and king safety.
     - source: "Chess_Mate_Two.mate_two_certificate_checked"
       lean: "Chess.mateTwoCertificate_checked"
       module: "Chess/MateTwo.lean"
