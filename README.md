@@ -26,10 +26,13 @@ transitions:
 The main refinement theorem is
 `Chess.legalMoves_correct`: filtering the transparent candidate universe is
 extensionally equal to the declarative `Chess.legalMove` relation.  The
-registry-facing `ChessKernel.main_result` exposes that theorem through the
-small `Challenge.lean` / proved `Solution.lean` split.  `Chess.kernel_correct`
-collects that result with the notation, perft, special-move, symmetry, and
-mate-certificate checks.
+registry-facing `ChessKernel.main_result` is a compact, self-contained
+projection of that refinement: `Challenge.lean` and the proved
+`Solution.lean` repeat the finite board, geometry, legality, and exhaustive
+candidate boundary so Palomar's scratch build does not import the local
+`Chess` library.  The full production proof remains
+`Chess.legalMoves_correct`.  `Chess.kernel_correct` collects that result with
+the notation, perft, special-move, symmetry, and mate-certificate checks.
 
 ## Verified reference results
 
@@ -58,10 +61,12 @@ and `SAN.lean` provide interchange layers. `Symmetry.lean`, `Examples.lean`,
 `MateTwo.lean`, and `Kernel.lean` provide the checked extensions and public
 correctness bundle.
 
-`Challenge.lean` contains only the advertised statement. `Solution.lean`
-proves the same declaration from the completed library. `comparator.json`
-pins the declaration checked by Palomar Comparator, while `formalization.yaml`
-records scope, provenance, authorship, automation, and review status.
+`Challenge.lean` contains the compact self-contained public statement model
+and its deliberate proof placeholder. `Solution.lean` repeats that model and
+proves the same declaration, while also linking it to the completed
+production library. `comparator.json` pins the declaration checked by
+Palomar Comparator, while `formalization.yaml` records scope, provenance,
+authorship, automation, and review status.
 
 ## Build and verify
 

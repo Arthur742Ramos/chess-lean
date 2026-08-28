@@ -32,11 +32,13 @@ replay, and runs both NanoDa and the default Lean kernel. Its cache and all
 
 ## Architecture
 
-The `Chess/` modules contain the chess semantics and executable regressions.
-`Challenge.lean` imports only the public statement dependencies and keeps its
-advertised theorem as a declaration with `sorry`; `Solution.lean` imports the
-completed library and proves the matching declaration. Keep this split intact
-so the registry comparison remains independently auditable.
+The `Chess/` modules contain the full chess semantics and executable
+regressions. `Challenge.lean` is a compact, self-contained public statement
+model: it imports only allowlisted statement dependencies and keeps its
+advertised theorem as a declaration with `sorry`. `Solution.lean` repeats that
+model, proves the matching declaration, and records the link to the completed
+production library. Keep this split intact so the registry comparison remains
+independently auditable.
 
 ## Attribution and submission
 
