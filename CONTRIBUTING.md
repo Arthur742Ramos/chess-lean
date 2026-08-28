@@ -42,7 +42,8 @@ so the registry comparison remains independently auditable.
 
 Changes that alter the modeled rule scope, source alignment, authorship, or
 review status must update `README.md` and `formalization.yaml` together. The
-authors of this repository are Arthur, David, and ruy. Palomar intake is a
+authors of this repository are Arthur Freitas Ramos, David Barros Hulak, and
+Ruy J. G. B. de Queiroz. Palomar intake is a
 separate action: record the exact public repository, immutable commit,
 Comparator configuration, author relationship, and review evidence before
 using the submission form.

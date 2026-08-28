@@ -9,14 +9,14 @@ project:
     histories and draw policies, FEN/UCI/SAN interfaces, perft regressions,
     symmetry, and a recursively checked mate-in-two certificate.
   authors:
-    - "Arthur"
-    - "David"
-    - "ruy"
+    - "Arthur Freitas Ramos"
+    - "David Barros Hulak"
+    - "Ruy J. G. B. de Queiroz"
   license: "Apache-2.0"
   responsible_maintainers:
-    - "Arthur"
-    - "David"
-    - "ruy"
+    - "Arthur Freitas Ramos"
+    - "David Barros Hulak"
+    - "Ruy J. G. B. de Queiroz"
 
 classification:
   arxiv: ["cs.LO"]
@@ -25,11 +25,11 @@ classification:
 sources:
   - title: "Chess in Isabelle/HOL: A Verified Executable Semantics"
     authors:
-      - "Arthur Ramos"
+      - "Arthur Freitas Ramos"
     contributors:
-      - name: "David"
+      - name: "David Barros Hulak"
         role: "co-author of the Lean reimplementation"
-      - name: "ruy"
+      - name: "Ruy J. G. B. de Queiroz"
         role: "co-author of the Lean reimplementation"
     id: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo"
     type: "formalization"
@@ -108,9 +108,9 @@ fidelity:
 review:
   status: "self-assessed with clean-build and independent-comparator checks"
   reviewers:
-    - "Arthur"
-    - "David"
-    - "ruy"
+    - "Arthur Freitas Ramos"
+    - "David Barros Hulak"
+    - "Ruy J. G. B. de Queiroz"
   notes: >-
     Review covers source-to-module alignment, executable special-move cases,
     standard perft values, parser/printer boundaries, certificate reply

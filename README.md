@@ -5,7 +5,7 @@ in the Isabelle/HOL development
 [`isabelle-afp-monorepo/projects/chess-isabelle`](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/master/projects/chess-isabelle).
 It has no Isabelle runtime dependency.
 
-Authors: Arthur, David, and ruy.
+Authors: Arthur Freitas Ramos, David Barros Hulak, and Ruy J. G. B. de Queiroz.
 
 ## What is formalized
 
