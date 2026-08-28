@@ -1,4 +1,4 @@
-import Mathlib.Data.Nat.Basic
+import Chess.Generator
 
 /-!
 # Advertised statement
@@ -9,6 +9,15 @@ state every headline claim here without hiding hypotheses or weakening the
 informal result.
 -/
 
-/-- Replace this toy statement and docstring with the result being submitted. -/
-theorem PalomarTemplate.main_result (n : ℕ) : n + n = 2 * n := by
+namespace ChessKernel
+
+/--
+The finite generator is extensionally exact: for every total position and
+move, filtering the transparent candidate universe by the executable legality
+test produces exactly the declarative legal-move relation.
+-/
+theorem main_result (p : Chess.Position) (m : Chess.Move) :
+    m ∈ Chess.legalMoves p ↔ Chess.legalMove p m := by
   sorry
+
+end ChessKernel

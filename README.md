@@ -1,160 +1,105 @@
-# PalomarTemplate
+# Chess in Lean 4
 
-[![CI](https://github.com/PalomarRegistry/PalomarTemplate/actions/workflows/ci.yml/badge.svg)](https://github.com/PalomarRegistry/PalomarTemplate/actions/workflows/ci.yml)
+This repository is a standalone Lean 4 reimplementation of the chess kernel
+in the Isabelle/HOL development
+[`isabelle-afp-monorepo/projects/chess-isabelle`](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/master/projects/chess-isabelle).
+It has no Isabelle runtime dependency.
 
-A best-practice starting point for a
-[Palomar](https://palomar-registry.org/) submission. Use this as a
-GitHub template, replace the toy theorem and all `TEMPLATE` metadata, and keep
-the separation between the human-auditable statement and the proof.
+Authors: Arthur, David, and ruy.
 
-## Repository map
+## What is formalized
 
-- `Challenge.lean` is the small statement surface a reader audits.
-- `Solution.lean` connects the same declaration to the completed proof.
-- `PalomarTemplate/` contains the full proof development.
-- `comparator.json` tells Comparator which declarations must match.
-- `formalization.yaml` records the public result description, provenance,
-  authorship, automation, fidelity, and review information.
-- `LICENSE` contains the Apache License 2.0 terms declared by
-  `project.license`.
-- `docbuild/` is the recommended nested doc-gen4 project.
-- `scripts/verify-comparator.sh` runs pinned Comparator, lean4export, NanoDa,
-  and Landrun revisions using the checked-in `comparator.json`, which enables
-  the independent NanoDa replay; `scripts/landrun-wrapper.sh` preserves
-  lean4export's command delimiter when invoked through Landrun's current CLI
-  and refuses any Comparator request to switch off part of the sandbox.
+The development models orthodox chess with total, executable state
+transitions:
 
-The root uses `lakefile.toml`, a supported stable Lean toolchain, and committed
-Lake manifests. The verifier reads `lean-toolchain` and checks that its pinned
-lean4export revision targets the same toolchain. When changing that exporter
-pin, review whether Comparator and NanoDa remain compatible with its export
-format. GitHub Actions builds the Lean project with `lean-action`, generates API
-documentation with doc-gen4, and independently checks the advertised statement
-with Comparator. Actions and verification tools are pinned to immutable
-commits.
+- finite `Fin 8` board coordinates, pieces, positions, clocks, castling rights,
+  and en-passant state;
+- geometric attacks, check, pseudo-legal moves, legal moves, special moves,
+  and an exhaustive finite candidate generator;
+- histories, reachability, repetition keys, claimable and automatic draw
+  predicates, terminal game status, and bounded forced mate;
+- recursively checked mate certificates, including the Isabelle mate-in-two
+  showcase;
+- typed and strict textual six-field FEN, UCI, and canonical SAN interfaces;
+- perft, rank-reflection symmetry, and concrete executable regression tests.
 
-## Start a real project
+The main refinement theorem is
+`Chess.legalMoves_correct`: filtering the transparent candidate universe is
+extensionally equal to the declarative `Chess.legalMove` relation.  The
+registry-facing `ChessKernel.main_result` exposes that theorem through the
+small `Challenge.lean` / proved `Solution.lean` split.  `Chess.kernel_correct`
+collects that result with the notation, perft, special-move, symmetry, and
+mate-certificate checks.
 
-1. Click **Use this template** on GitHub and clone the new repository.
-2. Rename `PalomarTemplate` in the Lake package, module directory, namespace,
-   Comparator declaration, and metadata.
-3. Replace the example library, `Challenge.lean`, and `Solution.lean`.
-   Keep `Challenge.lean` as the small statement-only surface, with one `sorry`
-   for each advertised declaration; put the proofs in `Solution.lean`, where
-   Comparator checks them against those statements. The proof-status counts in
-   `formalization.yaml` exclude the deliberate Challenge `sorry`s.
-4. Replace every `TEMPLATE` value in `formalization.yaml`. Values that might
-   otherwise look like plausible defaults—including repository role,
-   classifications, proof counts, automation method, and review status—are
-   deliberately invalid until you choose them. Replace a placeholder list with
-   an empty list only where its adjacent comment permits that; lists described
-   as required must remain nonempty.
-   Write `project.description` as the concise public registry abstract for the
-   formalization as a whole. It should let a mathematical reader identify the
-   subject and principal result families; it is not an inventory of Comparator
-   declarations, and the README and Challenge documentation can carry the
-   fuller account. `status.main_results` is optional: add it only when a short
-   curated project-level list is useful, not to mirror Comparator declarations.
-   The `sources` list must remain nonempty. Every source relationship must be
-   exactly `formalizes`, `adapts`, `independently-proves`, `background`, or
-   `other`. Choose one result origin: for a result first presented by the
-   formalization, include a descriptive source with `type: original-proof` and
-   `relationship: other`; every additional source must use `background` or
-   `other`. Otherwise, omit `type: original-proof`, and give at least one cited
-   mathematical source a `formalizes`, `adapts`, or `independently-proves`
-   relationship. A new proof of a known published result is source-based and
-   uses `independently-proves`, not `original-proof`.
+## Verified reference results
 
-   Every source needs a title and relationship. Its `type`, authors,
-   contributors, identifier, location, licence, and endorsement may be removed
-   when genuinely inapplicable. Use authors only for bibliographic authorship;
-   use contributors with a name and free-form role for credits such as editors
-   and problem proposers. A retained type is a concise free-text description
-   such as `article`, `paper`, `book`, `formalization`, `web post`,
-   `folklore`, or `conversation`. The exact value `original-proof` is
-   reserved for the result-origin declaration above. Set
-   `repository.role` to `substantive-development` and omit
-   `substantive_formalization`, or set it to `thin-wrapper` and provide the
-   underlying `owner/repository` or `https://github.com/owner/repository` URL
-   plus its full 40-character lowercase commit SHA. Remove
-   `related_formalizations` or set it to `[]` when none are known.
-   Keep the repository's Apache-2.0 `LICENSE` file and the matching
-   `project.license: "Apache-2.0"` metadata. This starter template supports
-   only that root licence. If the project deliberately uses another root
-   licence permitted by Palomar policy, use another starting point or own and
-   maintain the project's licence-validation CI contract. Cited sources and
-   dependencies retain their own licences.
-5. Update and commit dependency pins:
+The native-evaluated regression suite checks:
 
-   Before fetching and building the dependency closure, budget several GiB of
-   free space. After the root cache fetch and build, a clean local checkout of
-   the template's pinned Lean v4.32.0 manifest occupied about 7.7 GiB across
-   about 123,000 files under `.lake/`. The documentation build adds doc-gen4 and
-   its dependency closure under the shared `.lake/packages/` plus generated
-   output under `docbuild/.lake/`. The precise footprint changes with the
-   filesystem, cache contents, and any dependency updates. Both `.lake/`
-   directories are generated and must not be committed.
+- initial legal moves `20`, and perft depths `1`, `2`, and `3` equal to
+  `20`, `400`, and `8902`;
+- Kiwipete perft depths `1` and `2` equal to `48` and `2039`;
+- the standard en-passant/promotion-rich position at depths `1`, `2`, and
+  `3` equal to `14`, `191`, and `2812`;
+- legal castling, en-passant capture, promotion, FEN, UCI, SAN, and reflected
+  initial-position checks;
+- the seven-reply, three-ply certificate for the concrete two-move mate in
+  `Chess/MateTwo.lean`.
 
-   ```text
-   lake update
-   (cd docbuild && MATHLIB_NO_CACHE_ON_UPDATE=1 lake update)
-   ```
+These counts are correctness regressions for a transparent reference kernel,
+not a claim of engine-grade performance.
 
-6. Run the project checks before submitting:
+## Repository layout
 
-   ```text
-   lake exe cache get
-   lake build
-   (cd docbuild && lake build PalomarTemplate:docs)
-   ruby scripts/validate-formalization.rb
-   ./scripts/verify-comparator.sh
-   ```
+`Chess/Basic.lean`, `Geometry.lean`, `Attacks.lean`, `Check.lean`,
+`Transition.lean`, `Legality.lean`, and `Generator.lean` form the rule kernel.
+`History.lean`, `Game.lean`, `Perft.lean`, `Mate.lean`, and `Certificates.lean`
+add history-aware game semantics. `FEN.lean`, `FENText.lean`, `Notation.lean`,
+and `SAN.lean` provide interchange layers. `Symmetry.lean`, `Examples.lean`,
+`MateTwo.lean`, and `Kernel.lean` provide the checked extensions and public
+correctness bundle.
 
-   The metadata command parses the YAML, requires the Apache-2.0 root-licence
-   declaration, and reports the path of every retained template sentinel. CI
-   also detects the checked-in `LICENSE` file independently and runs an
-   explicit `--expect-template` check only in the canonical
-   `PalomarRegistry/PalomarTemplate` repository, proving that the shipped toy
-   metadata still has exactly the intended sentinel surface. Pull requests
-   from contribution forks run in that upstream repository context. Every
-   other repository—including standalone forks and repositories made with
-   **Use this template**—runs the ordinary command and requires every sentinel
-   to be replaced. CI also runs the corresponding build, documentation, cache,
-   and Comparator checks. Run the final command from the repository root. The
-   full check set requires Linux, Git, Go, Ruby, Rust/Cargo, Python 3, and a
-   working Landrun sandbox.
+`Challenge.lean` contains only the advertised statement. `Solution.lean`
+proves the same declaration from the completed library. `comparator.json`
+pins the declaration checked by Palomar Comparator, while `formalization.yaml`
+records scope, provenance, authorship, automation, and review status.
 
-   The pinned `lean-action` likewise runs `lake exe cache get` in CI and caches
-   `.lake/`. A successful canonical starter run deliberately includes the
-   statement-surface `sorry` warning and demonstrates the wiring, not submission
-   completeness.
+## Build and verify
 
-7. Read the current
-   [Palomar submission policy](https://github.com/PalomarRegistry/PalomarPolicy/blob/main/CONTRIBUTING.md),
-   commit the final snapshot, and
-   [open the submission form](https://submit.palomar-registry.org/)
-   with the full 40-character commit SHA.
+The project pins Lean `v4.32.0` and Mathlib `v4.32.0` in the checked-in Lake
+configuration.
 
-   Submit only if you are a responsible author or maintainer of the substantive
-   formalization, or have approval from one. For a thin wrapper, answer about
-   the underlying formalization rather than the wrapper; the form records that
-   relationship and allows optional evidence.
+```text
+lake exe cache get
+lake build
+(cd docbuild && lake build Chess:docs)
+ruby scripts/validate-formalization.rb
+./scripts/verify-comparator.sh
+```
 
-## Important boundaries
+Generated `.lake/` directories and documentation output are intentionally not
+part of the submission snapshot. The root license is Apache-2.0.
 
-This repository is structurally valid but its toy theorem does **not** meet
-Palomar's editorial floor. A green build or Comparator check establishes only
-that Lean accepts the project and that the recorded solution proves the recorded
-statement using the permitted axioms. It does not establish mathematical
-significance, fidelity to a source, novelty, or peer review.
+## Provenance and review boundary
 
-Keep `Challenge.lean` ordinary and readable. Definitions needed by the statement
-must have precise mathematical meanings and docstrings. Its transitive imports
-must resolve to Lean core, Mathlib, Tau Ceti, or CSLib; a Tau Ceti or CSLib
-import enlarges the trust surface and is prominently flagged. Dependencies used
-only by the proof may be arbitrary pinned Git dependencies.
-The root licence covers this repository snapshot only; cited papers, reused
-formalizations, and dependencies retain their own licences.
+The Isabelle entry is the source formalization being adapted; this repository
+is a fresh Lean implementation rather than a mechanically translated copy.
+The executable Boolean checker is used for finite computation, while exact
+logical predicates such as the unbounded dead-position definition remain
+separate from code generation. The current Lean capstone advertises the
+proved generator correspondence and checked concrete result families. It does
+not claim that every theorem name in the Isabelle entry has a one-for-one Lean
+counterpart.
 
-Questions are welcome in the
-[Palomar channel on the Lean Zulip](https://leanprover.zulipchat.com/#narrow/channel/621638-Palomar).
+Palomar submission is a separate action from local validation, CI, and local
+review. The exact public commit, Comparator configuration, author relationship,
+and review evidence must be recorded before intake; this repository is not
+submitted automatically by its build scripts. Once those materials are ready,
+use the [Palomar submission form](https://submit.palomar-registry.org/).
+
+## Acknowledgements
+
+The formalization uses Lean 4 and Mathlib. The original Isabelle development
+uses Isabelle/HOL and follows the FIDE Laws of Chess, FEN, UCI, SAN, and
+standard perft conventions. AI assistance was used for proof engineering; the
+final definitions, statements, and proofs in this repository are checked by
+Lean.

@@ -1,4 +1,4 @@
-import PalomarTemplate
+import Chess
 
 /-!
 # Proved solution
@@ -8,6 +8,10 @@ declaration below has exactly the same statement as its counterpart in
 `Challenge.lean` and uses only the permitted axioms.
 -/
 
-theorem PalomarTemplate.main_result (n : ℕ) : n + n = 2 * n := by
-  exact add_self_eq_two_mul n
+namespace ChessKernel
 
+theorem main_result (p : Chess.Position) (m : Chess.Move) :
+    m ∈ Chess.legalMoves p ↔ Chess.legalMove p m := by
+  exact Chess.legalMoves_correct p m
+
+end ChessKernel

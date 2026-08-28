@@ -1,31 +1,48 @@
-# Adapting this template
+# Contributing
 
-1. Rename the package and namespace throughout the repository.
-2. Put the proof development in the library and import it from `Solution.lean`.
-3. Rewrite `Challenge.lean` as a small, independently auditable statement
-   surface. Keep its advertised declarations statement-only with `sorry`; the
-   corresponding proofs belong in `Solution.lean`. Its imports must satisfy the
-   current Palomar policy.
-4. Update `comparator.json` with every advertised theorem and any definition
-   holes. Definition holes require special editorial scrutiny.
-5. Replace every `TEMPLATE` value in `formalization.yaml` with honest,
-   independently checkable metadata. Run
-   `ruby scripts/validate-formalization.rb`; it parses the file and lists every
-   retained sentinel, including deliberately invalid classification, proof,
-   automation, and review defaults. Replace a placeholder list with `[]` only
-   where its adjacent comment permits that; lists described as required must
-   remain nonempty. In particular, follow the result-origin instructions beside
-   `sources` rather than replacing that list with `[]`. Keep the Apache-2.0
-   `LICENSE` file and the matching `project.license: "Apache-2.0"` metadata.
-   This starter template supports only that root licence. A project deliberately
-   using another root licence permitted by Palomar policy needs another starting
-   point or must own and maintain its licence-validation CI contract. Leave the
-   `repository` example commented out unless this repository is only a wrapper
-   around a separately pinned substantive formalization.
-6. Run `lake update` and `cd docbuild && lake update` after changing dependencies,
-   then commit both manifest files.
-7. Run `lake build`, build the docs, and run Comparator before submitting to
-   Palomar.
+This repository is a standalone Lean 4 development. Keep the executable and
+logical layers explicit, preserve the source-to-module provenance in
+`formalization.yaml`, and keep `Challenge.lean` limited to the advertised
+statement surface.
 
-Do not submit the toy theorem unchanged. Palomar applies a substantive
-research-interest floor in addition to mechanical verification.
+## Local workflow
+
+The checked-in `lean-toolchain`, `lakefile.toml`, and both Lake manifests are
+the reproducibility boundary. After changing dependencies, regenerate and
+review both manifests. Build the project with:
+
+```text
+lake exe cache get
+lake build
+(cd docbuild && lake build Chess:docs)
+```
+
+Run the metadata, wrapper, and Comparator checks before opening a change:
+
+```text
+ruby test/validate_formalization_test.rb
+ruby scripts/validate-formalization.rb
+./test/landrun_wrapper_test.sh
+./scripts/verify-comparator.sh
+```
+
+The Comparator script checks out exact tool revisions, enables the NanoDa
+replay, and runs both NanoDa and the default Lean kernel. Its cache and all
+`.lake/` output are local build products and must not be committed.
+
+## Architecture
+
+The `Chess/` modules contain the chess semantics and executable regressions.
+`Challenge.lean` imports only the public statement dependencies and keeps its
+advertised theorem as a declaration with `sorry`; `Solution.lean` imports the
+completed library and proves the matching declaration. Keep this split intact
+so the registry comparison remains independently auditable.
+
+## Attribution and submission
+
+Changes that alter the modeled rule scope, source alignment, authorship, or
+review status must update `README.md` and `formalization.yaml` together. The
+authors of this repository are Arthur, David, and ruy. Palomar intake is a
+separate action: record the exact public repository, immutable commit,
+Comparator configuration, author relationship, and review evidence before
+using the submission form.
