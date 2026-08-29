@@ -56,4 +56,5 @@ separate action: record the exact public repository, immutable commit,
 Comparator configuration, author relationship, and review evidence before
 using the submission form. The adapted Isabelle source is pinned at revision
 `a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, path
-`projects/chess-isabelle`.
+`projects/chess-isabelle`, and the complete source snapshot is included at
+`artifacts/isabelle/chess-isabelle` for public inspection.

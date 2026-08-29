@@ -1,0 +1,87 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{pdfsetup}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Chess in Isabelle/HOL: A Verified Executable Semantics}
+\author{Arthur Ramos}
+\maketitle
+
+\begin{abstract}
+We formalize an executable semantics of orthodox chess in Isabelle/HOL.
+Finite board coordinates, geometric attacks, special moves, deterministic
+state transitions, check and legal moves are connected to an exhaustive
+finite reference generator by proved soundness and completeness theorems.
+This is a verified correctness kernel, not a Stockfish-style performance
+generator.  The entry
+also provides histories, repetition and clock predicates, textual and typed
+FEN (with an exact textual placement round trip) and coordinate/SAN notation
+interfaces, history-aware bounded forced-mate search with an explicit terminal
+and defender-claim policy, intended-move draw claims,
+history-aware recursive certificate soundness and arbitrary-depth certificate
+completeness,
+reflection involutions with attack/ray, pseudo-legal and legal-move transport,
+unique-king check transport, checkmate/stalemate reflection, perft,
+and executable regression facts, including the standard initial-position,
+Kiwipete, and en-passant/promotion-rich perft suites.  The SAN layer proves
+unconditional injectivity of canonical printing on legal moves and the
+corresponding parse-after-print theorem.  Its structured proof covers
+destination and capture fields, minimal disambiguation, pawn geometry,
+promotion, en passant, and castling; for non-pawn normal moves, equal
+non-castling SAN text is explicitly decomposed into destination, capture,
+disambiguation, and source equality.  The finite-list uniqueness predicate is
+retained as an executable regression certificate for concrete positions.  The
+semantic mate policy includes the exact unbounded reflexive-transitive
+dead-position predicate, while the executable policy leaves the terminal
+predicate to its caller.  The textual FEN parser
+is proved to recover
+the printed FEN on every position with a positive fullmove number; this is a
+parse-after-print canonicalization theorem, not a converse for arbitrary
+non-canonical text.  A separate showcase theory
+checks a three-ply certificate for a conventional two-move mate-in-two,
+including an exhaustive split over the defender's legal replies; the
+history-threaded certificate checks the same witness under the claim-aware
+mate policy.
+\end{abstract}
+
+\section*{Introduction}
+The formalization follows the orthodox rules baseline in the FIDE Laws of
+Chess \cite{FIDE2023Laws}.  Its interchange layers use six-field Forsyth--Edwards
+Notation and the Universal Chess Interface \cite{ForsythEdwards,UCIProtocol},
+while the executable perft regression follows the standard move-generator
+validation convention \cite{ChessProgrammingPerft}.  The development keeps
+these interoperability conventions separate from the semantic legal-move
+relation and makes the declarative specification/refinement boundary explicit.
+The generated move list is intentionally an exhaustive finite reference
+implementation: it enumerates the complete candidate universe and filters it
+through the independently stated legality relation.  Its exact refinement
+theorem is therefore a correctness result, not a claim of engine-grade move
+generation performance.  The structural \texttt{position\_invariant} is likewise not
+full chess legality: \texttt{legal\_position} is reachability from the initial
+position, and reachable positions are proved to satisfy the invariant.
+
+\section*{Related Work}
+The proof-engineering style follows the executable semantic specifications and
+refinement patterns presented by Nipkow and Klein \cite{NipkowKlein2014}.
+Formal chess work spans several complementary scopes.  Hurd formalized chess
+rules in HOL4 and verified the construction of pawnless endgame databases
+\cite{Hurd2005ChessEndgames}; Mari\'c, Jani\v{c}i\'c, and Malikovi\'c verified an
+executable KRK strategy in Isabelle/HOL with Z3 \cite{MaricJanicicMalikovic2015};
+and Malikovi\'c developed a Coq framework for automated retrograde-chess
+reasoning \cite{Malikovic2008Retrograde}.  Those projects emphasize verified
+endgame reasoning or retrograde analysis.  The present entry instead gives a
+declarative orthodox move semantics with all major special moves, an
+exhaustive finite-generator refinement, history and FIDE draw policies,
+notation interfaces, symmetry transport, bounded mate certificates, and
+executable perft regressions for a general reference kernel.
+
+\tableofcontents
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

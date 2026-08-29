@@ -1,0 +1,12 @@
+[project]
+name = "Chess in Isabelle/HOL: A Verified Executable Semantics"
+blueprint = "blueprint.md"
+
+[isabelle]
+session = "Chess"
+version = "Isabelle2025-2"
+dirs = ["."]
+
+[output]
+build_dir = ".isabelle-blueprint/build"
+site_dir = ".isabelle-blueprint/site"

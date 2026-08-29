@@ -39,13 +39,15 @@ sources:
     type: "formalization"
     revision: "a81eecf7b7a77064380bdf1f8915d73ee9955fa3"
     project_path: "projects/chess-isabelle"
-    location: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle"
+    artifact_path: "artifacts/isabelle/chess-isabelle"
+    location: "https://github.com/Arthur742Ramos/chess-lean/tree/main/artifacts/isabelle/chess-isabelle"
     relationship: "adapts"
     note: >-
       This is the exact Isabelle/HOL revision inspected and reimplemented for
-      this port. The source is the commit-relative project path
-      projects/chess-isabelle at the pinned revision above. This repository is
-      a standalone Lean 4 reimplementation and does not depend on Isabelle at
+      this port. The upstream source is the commit-relative project path
+      projects/chess-isabelle at the pinned revision above, and a complete copy
+      is preserved in this repository at artifact_path for public inspection.
+      The Lean development is standalone and does not depend on Isabelle at
       build time.
     license: "unknown"
     author_endorsement: "participated"

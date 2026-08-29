@@ -1,0 +1,38 @@
+chapter AFP
+
+session Chess = HOL +
+  options [timeout = 600]
+  theories
+    Chess_Square
+    Chess_Board
+    Chess_Position
+    Chess_Geometry
+    Chess_Attacks
+    Chess_Move
+    Chess_Castling
+    Chess_En_Passant
+    Chess_Promotion
+    Chess_Transition
+    Chess_Pseudo_Legal
+    Chess_Check
+    Chess_Legal
+    Chess_Move_Generator
+    Chess_Move_Generator_Correct
+    Chess_History
+    Chess_Repetition
+    Chess_Draws
+    Chess_Game
+    Chess_Perft
+    Chess_Mate
+    Chess_Certificates
+    Chess_FEN
+    Chess_FEN_Text
+    Chess_Notation
+    Chess_SAN
+    Chess_Symmetry
+    Chess_Examples
+    Chess_Mate_Two
+    Chess
+  document_files
+    "root.tex"
+    "root.bib"

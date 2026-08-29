@@ -1,11 +1,13 @@
 # Chess in Lean 4
 
 This repository is a standalone Lean 4 reimplementation of the chess kernel
-in the Isabelle/HOL development at the immutable revision
-`a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, under the commit-relative path
-`projects/chess-isabelle` ([pinned source tree](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle)).
-It has no Isabelle runtime dependency, and its provenance does not float with
-the source repository's default branch.
+in the Isabelle/HOL development. A complete copy of the Isabelle source is
+also committed here as the public artifact
+[`artifacts/isabelle/chess-isabelle`](artifacts/isabelle/chess-isabelle/).
+That artifact was exported from the immutable Isabelle revision
+`a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, under the upstream
+commit-relative path `projects/chess-isabelle`. It has no Isabelle runtime
+dependency at Lean build time.
 
 Authors: Arthur Freitas Ramos, David Barros Hulak, and Ruy J. G. B. de Queiroz.
 
@@ -84,7 +86,9 @@ statement and its deliberate proof placeholder. `Solution.lean` repeats the
 same production-faithful rule kernel and proves `Chess.legalMoves_correct`.
 `comparator.json` pins that exact production theorem, while
 `formalization.yaml` records scope, provenance, authorship, automation, and
-review status.
+review status. The complete adapted Isabelle source snapshot is preserved in
+`artifacts/isabelle/chess-isabelle/`, including its `ROOT`, theory files,
+blueprint files, and document sources.
 
 ## Build and verify
 
@@ -104,14 +108,15 @@ part of the submission snapshot. The root license is Apache-2.0.
 
 ## Provenance and review boundary
 
-The Isabelle entry is the source formalization being adapted.  The exact
-source inspected for this port is revision
-`a81eecf7b7a77064380bdf1f8915d73ee9955fa3` of
-`Arthur742Ramos/isabelle-afp-monorepo`, at the commit-relative path
-`projects/chess-isabelle`; this is also recorded in `formalization.yaml`.
-The [pinned source tree](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle)
-is the provenance reference.  This repository is a fresh Lean implementation
-rather than a mechanically translated copy.
+The Isabelle entry is the source formalization being adapted, and its complete
+source is included in this repository at
+`artifacts/isabelle/chess-isabelle/`. The exact source inspected for this port
+is revision `a81eecf7b7a77064380bdf1f8915d73ee9955fa3` of the author's
+Isabelle repository, at the upstream commit-relative path
+`projects/chess-isabelle`. The local artifact is the reviewable provenance
+snapshot; no access to the upstream repository is required to inspect it.
+This repository is a fresh Lean implementation rather than a mechanically
+translated copy.
 The executable Boolean checker is used for finite computation, while exact
 logical predicates such as the unbounded dead-position definition remain
 separate from code generation. The current Lean capstone advertises the
