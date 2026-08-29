@@ -27,32 +27,33 @@ classification:
   msc2020: ["03B35"]
 
 sources:
-  - title: "Chess in Isabelle/HOL: A Verified Executable Semantics"
+  - title: "FIDE Laws of Chess"
     authors:
-      - "Arthur Freitas Ramos"
-    contributors:
-      - name: "David Barros Hulak"
-        role: "co-author of the Lean reimplementation"
-      - name: "Ruy J. G. B. de Queiroz"
-        role: "co-author of the Lean reimplementation"
-    id: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo"
-    type: "formalization"
+      - "FIDE"
+    id: "https://handbook.fide.com/chapter/e012023"
+    type: "other"
+    relationship: "adapts"
+    note: >-
+      The rule kernel follows the orthodox baseline in the FIDE Laws of Chess
+      effective 1 January 2023. The selected Lean theorem is a
+      generator/declarative-correspondence result over generalized total finite records,
+      not a characterization of which records are FIDE-legal positions.
+
+related_formalizations:
+  - id: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo"
+    relationship: "adapts"
     revision: "a81eecf7b7a77064380bdf1f8915d73ee9955fa3"
     project_path: "projects/chess-isabelle"
     artifact_path: "artifacts/isabelle/chess-isabelle"
-    location: "https://github.com/Arthur742Ramos/chess-lean/tree/main/artifacts/isabelle/chess-isabelle"
-    relationship: "adapts"
+    location: "https://github.com/Arthur742Ramos/chess-lean/tree/2b8cc5e90949fdd103f3a8d6d7ac79d122d9caaf/artifacts/isabelle/chess-isabelle"
     note: >-
-      This is the exact Isabelle/HOL revision inspected and reimplemented for
-      this port. The upstream source is the commit-relative project path
-      projects/chess-isabelle at the pinned revision above, and a complete copy
-      is preserved in this repository at artifact_path for public inspection.
-      The Lean development is standalone and does not depend on Isabelle at
-      build time.
-    license: "unknown"
-    author_endorsement: "participated"
-
-related_formalizations: []
+      Prior Isabelle/HOL formalization adapted by this Lean reimplementation.
+      It originated in the private repository Arthur742Ramos/isabelle-afp-monorepo
+      at immutable revision a81eecf7b7a77064380bdf1f8915d73ee9955fa3 and the
+      commit-relative project path projects/chess-isabelle. A complete public
+      snapshot is committed at the location above, so review does not depend
+      on access to the upstream repository. The Lean development is standalone
+      and does not depend on Isabelle at build time.
 
 status:
   scope: >-
@@ -74,6 +75,8 @@ status:
     every theorem name or generic proof inventory in the Isabelle entry is
     duplicated, and the exact unbounded dead-position predicate remains a
     logical definition separate from executable policy evaluation.
+  # Counts cover the completed proof development; Challenge.lean's deliberate
+  # comparison hole is excluded.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []

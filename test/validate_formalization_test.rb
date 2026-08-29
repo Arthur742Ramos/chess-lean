@@ -82,6 +82,34 @@ class ValidateFormalizationTest < Minitest::Test
     end
   end
 
+  def test_requires_canonical_palomar_provenance_values
+    source_yaml = CUSTOMIZED_YAML + <<~YAML
+      sources:
+        - title: Example source
+          relationship: adapts
+          type: other
+      related_formalizations:
+        - id: https://example.com/formalization
+          relationship: builds-on
+    YAML
+    metadata(source_yaml) do |path|
+      assert_empty FormalizationTemplate.validate(path)
+    end
+
+    {
+      "relationship" => source_yaml.sub("relationship: adapts", "relationship: reimplements"),
+      "type" => source_yaml.sub("type: other", "type: formalization"),
+      "related relationship" => source_yaml.sub("relationship: builds-on", "relationship: ports")
+    }.each do |field, contents|
+      metadata(contents) do |path|
+        error = assert_raises(FormalizationTemplate::ValidationError) do
+          FormalizationTemplate.validate(path)
+        end
+        assert_includes error.message, "canonical Palomar value", field
+      end
+    end
+  end
+
   def test_cli_rejects_a_different_or_missing_root_license
     cases = {
       '"MIT"' => CUSTOMIZED_YAML.sub("license: Apache-2.0", "license: MIT"),

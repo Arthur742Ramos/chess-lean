@@ -4,10 +4,10 @@ This repository is a standalone Lean 4 reimplementation of the chess kernel
 in the Isabelle/HOL development. A complete copy of the Isabelle source is
 also committed here as the public artifact
 [`artifacts/isabelle/chess-isabelle`](artifacts/isabelle/chess-isabelle/).
-That artifact was exported from the immutable Isabelle revision
-`a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, under the upstream
-commit-relative path `projects/chess-isabelle`. It has no Isabelle runtime
-dependency at Lean build time.
+That artifact was exported from `Arthur742Ramos/isabelle-afp-monorepo` at the
+immutable Isabelle revision `a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, under
+the upstream commit-relative path `projects/chess-isabelle`. It has no
+Isabelle runtime dependency at Lean build time.
 
 Authors: Arthur Freitas Ramos, David Barros Hulak, and Ruy J. G. B. de Queiroz.
 
@@ -108,11 +108,12 @@ part of the submission snapshot. The root license is Apache-2.0.
 
 ## Provenance and review boundary
 
-The Isabelle entry is the source formalization being adapted, and its complete
-source is included in this repository at
+The mathematical rules baseline is the FIDE Laws of Chess effective 1 January
+2023. The earlier Isabelle/HOL entry is the related formalization adapted by
+this Lean development, and its complete source is included in this repository at
 `artifacts/isabelle/chess-isabelle/`. The exact source inspected for this port
-is revision `a81eecf7b7a77064380bdf1f8915d73ee9955fa3` of the author's
-Isabelle repository, at the upstream commit-relative path
+is revision `a81eecf7b7a77064380bdf1f8915d73ee9955fa3` of
+`Arthur742Ramos/isabelle-afp-monorepo`, at the upstream commit-relative path
 `projects/chess-isabelle`. The local artifact is the reviewable provenance
 snapshot; no access to the upstream repository is required to inspect it.
 This repository is a fresh Lean implementation rather than a mechanically

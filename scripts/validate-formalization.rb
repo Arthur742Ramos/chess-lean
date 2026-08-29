@@ -8,6 +8,37 @@ module FormalizationTemplate
   SENTINEL = /\ATEMPLATE(?::|\z)/
   REQUIRED_LICENSE = "Apache-2.0"
   REQUIRED_SECTIONS = %w[project classification automation review].freeze
+  SOURCE_RELATIONSHIPS = %w[
+    formalizes
+    adapts
+    independently-proves
+    background
+    other
+  ].freeze
+  SOURCE_TYPES = %w[
+    paper
+    book
+    web discussion
+    folklore
+    original-proof
+    other
+  ].freeze
+  RELATED_FORMALIZATION_RELATIONSHIPS = %w[
+    builds-on
+    adapts
+    independent
+    supersedes
+    other
+  ].freeze
+  AUTHOR_ENDORSEMENTS = %w[
+    participated
+    endorsed
+    no-response
+    not-contacted
+    declined
+    n/a
+    other
+  ].freeze
   EXPECTED_TEMPLATE_PATHS = [
     "$.project.name",
     "$.project.description",
@@ -101,6 +132,50 @@ module FormalizationTemplate
     end
   end
 
+  def self.validate_portable_provenance(document, path)
+    sources = document["sources"]
+    if sources.is_a?(Array)
+      sources.each_with_index do |source, index|
+        next unless source.is_a?(Hash)
+
+        relationship = source["relationship"]
+        unless relationship.nil? || SOURCE_RELATIONSHIPS.include?(relationship)
+          raise ValidationError,
+                "#{path} $.sources[#{index}].relationship must use a canonical " \
+                "Palomar value: #{SOURCE_RELATIONSHIPS.join(', ')}"
+        end
+
+        type = source["type"]
+        unless type.nil? || SOURCE_TYPES.include?(type)
+          raise ValidationError,
+                "#{path} $.sources[#{index}].type must use a canonical Palomar value: " \
+                "#{SOURCE_TYPES.join(', ')}"
+        end
+
+        endorsement = source["author_endorsement"]
+        unless endorsement.nil? || AUTHOR_ENDORSEMENTS.include?(endorsement)
+          raise ValidationError,
+                "#{path} $.sources[#{index}].author_endorsement must use a canonical " \
+                "Palomar value: #{AUTHOR_ENDORSEMENTS.join(', ')}"
+        end
+      end
+    end
+
+    related = document["related_formalizations"]
+    return unless related.is_a?(Array)
+
+    related.each_with_index do |item, index|
+      next unless item.is_a?(Hash)
+
+      relationship = item["relationship"]
+      unless relationship.nil? || RELATED_FORMALIZATION_RELATIONSHIPS.include?(relationship)
+        raise ValidationError,
+              "#{path} $.related_formalizations[#{index}].relationship must use a canonical " \
+              "Palomar value: #{RELATED_FORMALIZATION_RELATIONSHIPS.join(', ')}"
+      end
+    end
+  end
+
   def self.validate(path, expect_template: false)
     document = load_document(path)
     unless document["version"] == "v0.4"
@@ -132,6 +207,8 @@ module FormalizationTemplate
       raise ValidationError,
             "#{path} does not have the expected TEMPLATE sentinel surface; #{details.join('; ')}"
     end
+
+    validate_portable_provenance(document, path)
 
     return placeholders if placeholders.empty?
 
