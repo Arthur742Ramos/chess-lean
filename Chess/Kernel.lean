@@ -10,7 +10,8 @@ main interfaces without replacing their individual declarations: legal move
 generation is extensionally correct, the Boolean and proposition-level
 legality predicates agree, typed FEN is lossless, standard perft positions
 match their reference counts, notation round-trips on the initial move, and
-the Isabelle mate-in-two certificate is accepted by the checker.
+the Isabelle mate-in-two certificate is accepted by both certificate layers.
+It also records the rule-level adequacy witness for bounded forced mate.
 -/
 
 namespace Chess
@@ -57,7 +58,10 @@ def kernelClaim : Prop :=
       (⟨0, by decide⟩, ⟨7, by decide⟩) = some ⟨.white, .queen⟩) ∧
   (∀ p, mirrorPosition (mirrorPosition p) = p) ∧
   (checkMateCertificateB .white mateTwoCandidate 3 mateTwoCertificate = true) ∧
-  (checkMateCertificateExecutable .white [mateTwoCandidate] 3 mateTwoCertificate = true)
+  (checkMateCertificateExecutable .white [mateTwoCandidate] 3 mateTwoCertificate = true) ∧
+  (ruleCertificateCheckB (fun _ => false) .white mateTwoCandidate 3
+    mateTwoCertificate = true) ∧
+  ruleForcedMate (fun _ => false) .white mateTwoCandidate 3
 
 theorem kernel_correct : kernelClaim := by
   constructor
@@ -112,6 +116,10 @@ theorem kernel_correct : kernelClaim := by
     exact mirrorPosition_involutive p
   constructor
   · exact mateTwoCertificate_checked
+  constructor
   · exact mateTwoCertificate_history_checked
+  constructor
+  · exact mateTwoCertificate_rules_checked
+  · exact mateTwoCertificate_rules_forced
 
 end Chess

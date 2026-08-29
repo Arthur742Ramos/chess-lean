@@ -6,18 +6,18 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.FinCases
 
 /-!
-# Palomar target: generalized legal-move generation for orthodox rules
+# Palomar target: adequacy of finite mate certificates
 
 This Challenge exposes the full production rule kernel rather than a reduced
 registry surrogate. Positions carry castling rights and en-passant targets;
 the move datatype contains normal moves, promotions, en-passant captures, and
-all four castling moves. The selected theorem is the universal production
-generator correspondence `Chess.legalMoves_correct` over the represented
-`Position` records. The record type is intentionally generalized: the theorem
-does not assume `positionInvariant` or reachability, so potentially malformed
-or unreachable records are included. The claim is agreement between the
-exhaustive generator and the declarative relation on that record space, not a
-characterization of which records are orthodox legal positions.
+all four castling moves. The selected theorem
+`Chess.mateCertificate_rules_adequate` states soundness and completeness of a
+finite alternating mate-certificate language: for every represented position,
+attacking colour, bound, and explicit terminal policy, an accepted certificate
+exists exactly when the recursive bounded forced-mate semantics holds. The
+record type is intentionally generalized, so the result does not assume
+`positionInvariant` or reachability.
 -/
 
 /-!
@@ -891,12 +891,67 @@ theorem mem_candidateMoves (m : Move) : m ∈ candidateMoves := by
 
 theorem legalMoves_correct (p : Position) (m : Move) :
     m ∈ legalMoves p ↔ legalMove p m := by
-  sorry
+  have hc : m ∈ candidateMoves := mem_candidateMoves m
+  simp only [legalMoves, List.mem_filter, hc, true_and, decide_eq_true_eq]
 
 theorem legalMoves_sound {p : Position} {m : Move} (h : m ∈ legalMoves p) :
     legalMove p m := (legalMoves_correct p m).1 h
 
 theorem legalMoves_complete {p : Position} {m : Move} (h : legalMove p m) :
     m ∈ legalMoves p := (legalMoves_correct p m).2 h
+
+def checkmateB (p : Position) : Bool :=
+  inCheckB p p.turn && (legalMoves p).isEmpty
+
+def stalemateB (p : Position) : Bool :=
+  (!inCheckB p p.turn) && (legalMoves p).isEmpty
+
+inductive MateCertificate where
+  | mateTerminal
+  | mateAttacker (move : Move) (certificate : MateCertificate)
+  | mateDefender (replies : List (Move × MateCertificate))
+
+def certificateRepliesB (p : Position)
+    (xs : List (Move × MateCertificate)) : Bool :=
+  (legalMoves p).all (fun m => xs.any (fun x => x.1 == m))
+
+def ruleCertificateRepliesB (p : Position)
+    (xs : List (Move × MateCertificate)) : Bool :=
+  certificateRepliesB p xs && xs.all (fun x => legalMoveB p x.1)
+
+def ruleCertificateCheckB (terminal : Position → Bool)
+    (c : Color) (p : Position) : Nat → MateCertificate → Bool
+  | _, .mateTerminal => checkmateB p && (p.turn == Color.opposite c)
+  | 0, .mateAttacker _ _ => false
+  | 0, .mateDefender _ => false
+  | n + 1, .mateAttacker m child =>
+      (p.turn == c) && (!stalemateB p) && (!terminal p) && legalMoveB p m &&
+        ruleCertificateCheckB terminal c (applyMove p m) n child
+  | n + 1, .mateDefender xs =>
+      (p.turn != c) && (!stalemateB p) && (!terminal p) &&
+        ruleCertificateRepliesB p xs &&
+        xs.all (fun x => legalMoveB p x.1 &&
+          ruleCertificateCheckB terminal c (applyMove p x.1) n x.2)
+
+noncomputable def ruleForcedMate (terminal : Position → Bool)
+    (c : Color) (p : Position) : Nat → Prop
+  | 0 => checkmateB p = true ∧ p.turn = Color.opposite c
+  | n + 1 => by
+      classical
+      exact if checkmateB p = true then p.turn = Color.opposite c
+      else if stalemateB p = true then False
+      else if terminal p = true then False
+      else if p.turn = c then
+        ∃ m, m ∈ legalMoves p ∧
+          ruleForcedMate terminal c (applyMove p m) n
+      else
+        ∀ m, m ∈ legalMoves p →
+          ruleForcedMate terminal c (applyMove p m) n
+
+theorem mateCertificate_rules_adequate (terminal : Position → Bool)
+    (c : Color) (p : Position) (n : Nat) :
+    (∃ cert, ruleCertificateCheckB terminal c p n cert = true) ↔
+      ruleForcedMate terminal c p n := by
+  sorry
 
 end Chess

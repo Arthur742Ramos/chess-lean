@@ -70,6 +70,17 @@ theorem mateTwoCertificate_history_checked :
     checkMateCertificateExecutable .white [mateTwoCandidate] 3 mateTwoCertificate = true := by
   native_decide
 
+theorem mateTwoCertificate_rules_checked :
+    ruleCertificateCheckB (fun _ => false) .white mateTwoCandidate 3
+      mateTwoCertificate = true := by
+  native_decide
+
+theorem mateTwoCertificate_rules_forced :
+    ruleForcedMate (fun _ => false) .white mateTwoCandidate 3 := by
+  apply (mateCertificate_rules_adequate (fun _ => false) .white
+    mateTwoCandidate 3).1
+  exact ⟨mateTwoCertificate, mateTwoCertificate_rules_checked⟩
+
 theorem mateTwoKingLine_checkmate :
     checkmateB (applyMove (applyMove mateTwoKeyPosition mateTwoKingReply)
       mateTwoKingMate) = true := by

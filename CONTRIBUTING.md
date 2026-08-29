@@ -34,13 +34,14 @@ replay, and runs both NanoDa and the default Lean kernel. Its cache and all
 
 The `Chess/` modules contain the full orthodox-rule semantics and executable
 regressions. `Challenge.lean` is a self-contained copy of the complete
-production rule kernel needed for the advertised generalized-record theorem:
+production rule kernel needed for the advertised certificate-adequacy theorem:
 its position state has castling and en-passant state, and its move type has
 promotions, en-passant captures, and all four castling moves. The theorem is
 deliberately universal over the represented `Position` records, including
 potentially malformed or unreachable records; it does not assume
-`positionInvariant` or reachability. It keeps `Chess.legalMoves_correct` as
-the deliberate Challenge proof hole.
+`positionInvariant` or reachability. It leaves only
+`Chess.mateCertificate_rules_adequate` as the deliberate Challenge proof hole;
+the move-generator correspondence remains proved as an internal lemma.
 `Solution.lean` repeats that same full rule-kernel surface and supplies the
 production proof. Keeping both files source-equivalent apart from that proof
 lets the registry comparison remain independently auditable without relying
