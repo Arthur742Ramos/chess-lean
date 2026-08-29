@@ -32,12 +32,15 @@ replay, and runs both NanoDa and the default Lean kernel. Its cache and all
 
 ## Architecture
 
-The `Chess/` modules contain the full chess semantics and executable
+The `Chess/` modules contain the full orthodox-rule semantics and executable
 regressions. `Challenge.lean` is a self-contained copy of the complete
-production rule kernel needed for the advertised theorem: its position state
-has castling and en-passant state, and its move type has promotions,
-en-passant captures, and all four castling moves. It keeps
-`Chess.legalMoves_correct` as the deliberate Challenge proof hole.
+production rule kernel needed for the advertised generalized-record theorem:
+its position state has castling and en-passant state, and its move type has
+promotions, en-passant captures, and all four castling moves. The theorem is
+deliberately universal over the represented `Position` records, including
+potentially malformed or unreachable records; it does not assume
+`positionInvariant` or reachability. It keeps `Chess.legalMoves_correct` as
+the deliberate Challenge proof hole.
 `Solution.lean` repeats that same full rule-kernel surface and supplies the
 production proof. Keeping both files source-equivalent apart from that proof
 lets the registry comparison remain independently auditable without relying
@@ -51,4 +54,6 @@ authors of this repository are Arthur Freitas Ramos, David Barros Hulak, and
 Ruy J. G. B. de Queiroz. Palomar intake is a
 separate action: record the exact public repository, immutable commit,
 Comparator configuration, author relationship, and review evidence before
-using the submission form.
+using the submission form. The adapted Isabelle source is pinned at revision
+`a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, path
+`projects/chess-isabelle`.

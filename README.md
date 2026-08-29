@@ -1,16 +1,18 @@
 # Chess in Lean 4
 
 This repository is a standalone Lean 4 reimplementation of the chess kernel
-in the Isabelle/HOL development
-[`isabelle-afp-monorepo/projects/chess-isabelle`](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/master/projects/chess-isabelle).
-It has no Isabelle runtime dependency.
+in the Isabelle/HOL development at the immutable revision
+`a81eecf7b7a77064380bdf1f8915d73ee9955fa3`, under the commit-relative path
+`projects/chess-isabelle` ([pinned source tree](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle)).
+It has no Isabelle runtime dependency, and its provenance does not float with
+the source repository's default branch.
 
 Authors: Arthur Freitas Ramos, David Barros Hulak, and Ruy J. G. B. de Queiroz.
 
 ## What is formalized
 
-The development models orthodox chess with total, executable state
-transitions:
+The development models orthodox chess rules with total, executable state
+transitions over generalized finite position records:
 
 - finite `Fin 8` board coordinates, pieces, positions, clocks, castling rights,
   and en-passant state;
@@ -23,17 +25,32 @@ transitions:
 - typed and strict textual six-field FEN, UCI, and canonical SAN interfaces;
 - perft, rank-reflection symmetry, and concrete executable regression tests.
 
+`Chess.Position` is an ordinary total record, not a subtype of positions known
+to be reachable from the initial position.  It can therefore represent
+malformed or unreachable records (for example, records with unusual material,
+king placement, clocks, or metadata).  The development defines
+`positionInvariant` as a structural safety predicate, but the selected
+registry theorem does not assume that predicate or reachability.
+
 The selected registry result is the production theorem
-`Chess.legalMoves_correct`: for every full `Chess.Position` and every full
-`Chess.Move`, membership in the exhaustive candidate generator is equivalent
-to the declarative legal-move relation.  The state includes castling rights
-and en-passant targets; the move type includes normal moves, promotions,
-en-passant captures, and all four castling moves.  `Challenge.lean` and
-`Solution.lean` carry a standalone copy of this complete rule-kernel surface
-so Palomar can compare the theorem without importing the repository's local
-`.olean` files.  The Solution contains the same production proof.  The
-separate `Chess.kernel_correct` theorem collects this generator result with
-the notation, perft, special-move, symmetry, and mate-certificate checks.
+`Chess.legalMoves_correct`: for every full `Chess.Position` record—including
+potentially malformed or unreachable records—and every full `Chess.Move`,
+membership in the exhaustive candidate generator is equivalent to the
+declarative legal-move relation defined by this development.  The state
+includes castling rights and en-passant targets; the move type includes normal
+moves, promotions, en-passant captures, and all four castling moves.
+`Challenge.lean` and `Solution.lean` carry a standalone copy of this complete
+rule-kernel surface so Palomar can compare the theorem without importing the
+repository's local `.olean` files.  The Solution contains the same production
+proof.  The separate `Chess.kernel_correct` theorem collects this generator
+result with the notation, perft, special-move, symmetry, and mate-certificate
+checks.
+
+This is a correspondence theorem for the represented generalized record
+space, not a claim that every record is a legal FIDE position and not a
+reachability characterization.  The initial position and the concrete
+reference positions used by the perft and notation regressions are orthodox
+instances of that broader domain.
 
 ## Verified reference results
 
@@ -62,9 +79,9 @@ and `SAN.lean` provide interchange layers. `Symmetry.lean`, `Examples.lean`,
 `MateTwo.lean`, and `Kernel.lean` provide the checked extensions and public
 correctness bundle.
 
-`Challenge.lean` contains the self-contained full rule-kernel statement and
-its deliberate proof placeholder. `Solution.lean` repeats the same
-production-faithful rule kernel and proves `Chess.legalMoves_correct`.
+`Challenge.lean` contains the self-contained generalized-record rule-kernel
+statement and its deliberate proof placeholder. `Solution.lean` repeats the
+same production-faithful rule kernel and proves `Chess.legalMoves_correct`.
 `comparator.json` pins that exact production theorem, while
 `formalization.yaml` records scope, provenance, authorship, automation, and
 review status.
@@ -87,14 +104,22 @@ part of the submission snapshot. The root license is Apache-2.0.
 
 ## Provenance and review boundary
 
-The Isabelle entry is the source formalization being adapted; this repository
-is a fresh Lean implementation rather than a mechanically translated copy.
+The Isabelle entry is the source formalization being adapted.  The exact
+source inspected for this port is revision
+`a81eecf7b7a77064380bdf1f8915d73ee9955fa3` of
+`Arthur742Ramos/isabelle-afp-monorepo`, at the commit-relative path
+`projects/chess-isabelle`; this is also recorded in `formalization.yaml`.
+The [pinned source tree](https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle)
+is the provenance reference.  This repository is a fresh Lean implementation
+rather than a mechanically translated copy.
 The executable Boolean checker is used for finite computation, while exact
 logical predicates such as the unbounded dead-position definition remain
 separate from code generation. The current Lean capstone advertises the
-proved full-rule generator correspondence and checked concrete result
-families. It does not claim that every theorem name in the Isabelle entry has
-a one-for-one Lean counterpart.
+proved full-rule generator correspondence over generalized position records
+and checked concrete result families.  It does not claim that every theorem
+name in the Isabelle entry has a one-for-one Lean counterpart, that arbitrary
+records are reachable chess positions, or that the selected theorem itself
+enforces orthodox-position well-formedness.
 
 Palomar submission is a separate action from local validation, CI, and local
 review. The exact public commit, Comparator configuration, author relationship,

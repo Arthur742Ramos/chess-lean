@@ -3,11 +3,15 @@ version: "v0.4"
 project:
   name: "Chess in Lean 4"
   description: >-
-    A standalone Lean 4 reimplementation of an orthodox-chess semantics. It
-    formalizes a total finite board model, geometric attacks, special moves,
-    check and legal-move semantics, an exhaustive verified move generator,
-    histories and draw policies, FEN/UCI/SAN interfaces, perft regressions,
-    symmetry, and a recursively checked mate-in-two certificate.
+    A standalone Lean 4 reimplementation of orthodox-chess move rules over
+    generalized total finite position records. It formalizes a finite board
+    model, geometric attacks, special moves, check and legal-move semantics,
+    an exhaustive verified move generator, histories and draw policies,
+    FEN/UCI/SAN interfaces, perft regressions, symmetry, and a recursively
+    checked mate-in-two certificate. The selected generator correspondence is
+    intentionally universal over potentially malformed or unreachable records;
+    standard orthodox positions are checked concrete instances of this broader
+    semantic domain.
   authors:
     - "Arthur Freitas Ramos"
     - "David Barros Hulak"
@@ -33,11 +37,16 @@ sources:
         role: "co-author of the Lean reimplementation"
     id: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo"
     type: "formalization"
-    location: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/master/projects/chess-isabelle"
+    revision: "a81eecf7b7a77064380bdf1f8915d73ee9955fa3"
+    project_path: "projects/chess-isabelle"
+    location: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo/tree/a81eecf7b7a77064380bdf1f8915d73ee9955fa3/projects/chess-isabelle"
     relationship: "adapts"
     note: >-
-      This repository is a standalone Lean 4 reimplementation of the cited
-      Isabelle/HOL development and does not depend on Isabelle at build time.
+      This is the exact Isabelle/HOL revision inspected and reimplemented for
+      this port. The source is the commit-relative project path
+      projects/chess-isabelle at the pinned revision above. This repository is
+      a standalone Lean 4 reimplementation and does not depend on Isabelle at
+      build time.
     license: "unknown"
     author_endorsement: "participated"
 
@@ -45,21 +54,24 @@ related_formalizations: []
 
 status:
   scope: >-
-    The proved Lean scope covers total finite positions and transitions,
+    The proved Lean scope covers generalized total finite position records and
+    transitions, including potentially malformed or unreachable records;
     attacks, check, pseudo-legal and legal moves, all standard special moves,
     exhaustive finite move generation, histories and reachability predicates,
     repetition and FIDE clock predicates, bounded forced mate, finite mate
     certificates, typed and strict textual FEN, UCI, canonical SAN, perft,
     rank-reflection symmetry, concrete standard perft regressions, and the
     Isabelle mate-in-two witness. The capstone theorem advertises the
-    full-rule `Chess.legalMoves_correct` generator correspondence and the
-    checked concrete result families. The Challenge and Solution expose the
-    complete production move/state core, including castling and en passant.
-    This is a faithful standalone reimplementation rather than a line-by-line
-    translation: not every theorem name or generic proof inventory in the
-    Isabelle entry is duplicated, and the exact unbounded dead-position
-    predicate remains a logical definition separate from executable policy
-    evaluation.
+    full-rule `Chess.legalMoves_correct` generator correspondence over that
+    entire represented record space and the checked concrete result families.
+    `positionInvariant` is available as a structural safety predicate, but it
+    is not a hypothesis of the selected theorem and is not a characterization
+    of reachability. The Challenge and Solution expose the complete production
+    move/state core, including castling and en passant. This is a faithful
+    standalone reimplementation rather than a line-by-line translation: not
+    every theorem name or generic proof inventory in the Isabelle entry is
+    duplicated, and the exact unbounded dead-position predicate remains a
+    logical definition separate from executable policy evaluation.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -98,14 +110,17 @@ automation:
 
 fidelity:
   divergences: >-
-    The Lean implementation preserves the modeled orthodox-chess state and
+    The Lean implementation preserves the modeled orthodox-rule state and
     rule scope but reorganizes the thirty Isabelle theories into cohesive Lean
     modules. It uses Boolean evaluators for executable checking and proposition
-    wrappers for exact logical statements. The current port exposes the
-    generic legal-generator refinement and concrete certificate/perft/notation
-    checks; it does not claim one-for-one Lean counterparts for every Isabelle
-    invariant-preservation, certificate-soundness/completeness, or symmetry
-    transport lemma.
+    wrappers for exact logical statements. The selected legal-generator
+    refinement is intentionally stated over generalized Position records and
+    does not itself assume `positionInvariant` or reachability; it therefore
+    does not claim that every represented record is an orthodox legal position.
+    The current port exposes the generic legal-generator refinement and
+    concrete certificate/perft/notation checks; it does not claim one-for-one
+    Lean counterparts for every Isabelle invariant-preservation,
+    certificate-soundness/completeness, or symmetry transport lemma.
 
 review:
   status: "self-assessed with clean-build and independent-comparator checks"
@@ -127,14 +142,19 @@ alignment:
       lean: "Chess.legalMoves_correct"
       module: "Chess/Generator.lean"
       status: "proved"
-      note: "The exhaustive candidate filter is equivalent to declarative legality."
+      note: >-
+        The exhaustive candidate filter is equivalent to declarative legality
+        for every represented Position record; no well-formedness or
+        reachability hypothesis is assumed.
     - source: "Chess_Move_Generator_Correct.legal_moves_correct"
       lean: "Chess.legalMoves_correct"
       module: "Challenge.lean / Solution.lean"
       status: "proved"
       note: >-
         Full-rule standalone registry surface of the production generator
-        theorem, including castling, en passant, promotion, and king safety.
+        theorem over generalized records, including castling, en passant,
+        promotion, and king safety. Potentially malformed or unreachable
+        records are intentionally in scope.
     - source: "Chess_Mate_Two.mate_two_certificate_checked"
       lean: "Chess.mateTwoCertificate_checked"
       module: "Chess/MateTwo.lean"

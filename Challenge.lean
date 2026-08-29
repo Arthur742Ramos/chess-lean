@@ -6,21 +6,30 @@ import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.FinCases
 
 /-!
-# Palomar target: complete orthodox legal-move generation
+# Palomar target: generalized legal-move generation for orthodox rules
 
 This Challenge exposes the full production rule kernel rather than a reduced
 registry surrogate. Positions carry castling rights and en-passant targets;
 the move datatype contains normal moves, promotions, en-passant captures, and
 all four castling moves. The selected theorem is the universal production
-generator correspondence `Chess.legalMoves_correct`.
+generator correspondence `Chess.legalMoves_correct` over the represented
+`Position` records. The record type is intentionally generalized: the theorem
+does not assume `positionInvariant` or reachability, so potentially malformed
+or unreachable records are included. The claim is agreement between the
+exhaustive generator and the declarative relation on that record space, not a
+characterization of which records are orthodox legal positions.
 -/
 
 /-!
-# The finite state model for orthodox chess
+# The finite state model for generalized orthodox-rule records
 
 This module is the Lean counterpart of the finite board, position, and move
-foundations in the Isabelle development. Coordinates are represented by
-`Fin 8`, so all board operations are total and executable.
+foundations in the Isabelle development at revision
+`a81eecf7b7a77064380bdf1f8915d73ee9955fa3` and commit-relative path
+`projects/chess-isabelle`. Coordinates are represented by `Fin 8`, so all
+board operations are total and executable. `Position` is a general record;
+standard initial and reference positions are orthodox instances, but the
+selected theorem does not restrict its domain to them.
 -/
 
 namespace Chess
@@ -141,6 +150,8 @@ def rightsConsistent (p : Position) : Prop :=
     hasPiece p.board (rightKingSquare r) (rightColor r) .king ∧
       hasPiece p.board (rightRookSquare r) (rightColor r) .rook
 
+/- Structural safety predicate; it is not assumed by the selected universal
+   generator theorem and is not a reachability characterization. -/
 def positionInvariant (p : Position) : Prop :=
   exactlyOneKing p.board .white ∧
     exactlyOneKing p.board .black ∧
