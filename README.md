@@ -31,29 +31,27 @@ transitions over generalized finite position records:
 to be reachable from the initial position.  It can therefore represent
 malformed or unreachable records (for example, records with unusual material,
 king placement, clocks, or metadata).  The development defines
-`positionInvariant` as a structural safety predicate, but the selected
-registry theorem does not assume that predicate or reachability.
+`positionInvariant` as a structural safety predicate and proves that legal
+reachability from the initial position preserves it.
 
-The selected registry result is `Chess.mateCertificate_rules_adequate`.  For
-every full `Chess.Position` record, attacking colour, finite bound, and
-explicit terminal-position policy, it proves soundness and completeness of a
-finite alternating mate-certificate language: an accepted certificate exists
-exactly when the recursive bounded forced-mate semantics holds.  The checker
-requires a checkmate terminal, a legal attacker move at attacker nodes, and a
-certificate for every legal defender reply.  Its constructive completeness
-direction builds the defender list from the verified `legalMoves` generator.
-`Challenge.lean` and `Solution.lean` carry a standalone copy of this theorem's
-complete rule-level surface so Palomar can compare it without importing the
-repository's local `.olean` files.  The Solution contains the full proof.  The
-separate `Chess.kernel_correct` theorem collects this result with the
-generator, notation, perft, special-move, symmetry, and history-aware
-certificate checks.
+The selected registry result is `Chess.reachable_positionInvariant`.  It proves
+by induction on the reflexive-transitive closure of legal chess transitions
+that every reachable position has exactly one king of each colour, no pawn on
+either promotion rank, castling rights consistent with the home king and rook,
+and a positive fullmove clock.  The transition step is proved separately for
+normal moves, promotions, en-passant captures, and all four castling moves;
+the proof also accounts for the rights-removal bookkeeping.  `Challenge.lean`
+and `Solution.lean` carry the same standalone surface so Palomar can compare
+the result without importing the repository's local `.olean` files.  The
+certificate-adequacy theorem remains proved as an internal result, and
+`Chess.kernel_correct` collects the generator, notation, perft, special-move,
+symmetry, and certificate checks.
 
-This is an adequacy theorem for the represented generalized record space, not
-a claim that every record is a legal FIDE position and not a reachability
-characterization. The initial position and the concrete reference positions
-used by the perft and notation regressions are orthodox instances of that
-broader domain.
+This is a one-way safety theorem: it does not claim that every structurally
+invariant record is reachable, nor that every represented record is a legal
+FIDE position. The initial position and the concrete reference positions used
+by the perft and notation regressions are orthodox instances of the broader
+total record domain.
 
 ## Verified reference results
 
@@ -80,15 +78,15 @@ not a claim of engine-grade performance.
 `History.lean`, `Game.lean`, `Perft.lean`, `Mate.lean`, and `Certificates.lean`
 add history-aware game semantics. `FEN.lean`, `FENText.lean`, `Notation.lean`,
 and `SAN.lean` provide interchange layers. `Symmetry.lean`, `Examples.lean`,
-`MateTwo.lean`, and `Kernel.lean` provide the checked extensions and public
-correctness bundle.
+`MateTwo.lean`, `Invariant.lean`, and `Kernel.lean` provide the checked
+extensions and public correctness bundle.
 
 `Challenge.lean` contains the self-contained generalized-record rule kernel
-and the deliberate proof placeholder for `Chess.mateCertificate_rules_adequate`.
-`Solution.lean` repeats the same production-faithful surface and proves the
-certificate adequacy theorem, while also retaining the verified internal
-`Chess.legalMoves_correct` lemma. `comparator.json` pins the certificate
-adequacy theorem, while
+and the deliberate proof placeholder for `Chess.reachable_positionInvariant`.
+`Solution.lean` repeats the same production-faithful surface and supplies the
+full invariant proof, while also retaining the proved certificate-adequacy and
+`Chess.legalMoves_correct` lemmas. `comparator.json` pins the reachability
+invariant theorem, while
 `formalization.yaml` records scope, provenance, authorship, automation, and
 review status. The complete adapted Isabelle source snapshot is preserved in
 `artifacts/isabelle/chess-isabelle/`, including its `ROOT`, theory files,
@@ -125,13 +123,13 @@ translated copy.
 The executable Boolean checker is used for finite computation, while exact
 logical predicates such as the unbounded dead-position definition remain
 separate from code generation. The current Lean capstone advertises the
-proved rule-level certificate adequacy theorem with an explicit terminal
-policy, together with the full-rule generator correspondence and checked
-concrete result families. The history-aware and draw-aware checker is kept
-separate because its policy depends on an explicit history. This repository
-does not claim that every theorem name in the Isabelle entry has a one-for-one
-Lean counterpart, that arbitrary records are reachable chess positions, or
-that the selected theorem itself enforces orthodox-position well-formedness.
+proved reachable-position invariant, together with the full-rule generator
+correspondence, certificate adequacy, and checked concrete result families.
+The history-aware and draw-aware checker is kept separate because its policy
+depends on an explicit history. This repository does not claim that every
+theorem name in the Isabelle entry has a one-for-one Lean counterpart, that
+arbitrary records are reachable chess positions, or that the invariant is a
+complete characterization of reachability.
 
 Palomar submission is a separate action from local validation, CI, and local
 review. The exact public commit, Comparator configuration, author relationship,

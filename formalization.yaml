@@ -8,9 +8,9 @@ project:
     model, geometric attacks, special moves, check and legal-move semantics,
     an exhaustive verified move generator, histories and draw policies,
     FEN/UCI/SAN interfaces, perft regressions, symmetry, and a recursively
-    checked mate-in-two certificate. The selected certificate-adequacy theorem
-    proves soundness and completeness of finite alternating mate certificates
-    for an explicit terminal policy; standard orthodox positions are checked
+    checked mate-in-two certificate. The selected reachability-invariant
+    theorem proves that legal transitions from the initial position preserve
+    the structural safety conditions; standard orthodox positions are checked
     concrete instances of this broader semantic domain.
   authors:
     - "Arthur Freitas Ramos"
@@ -35,9 +35,10 @@ sources:
     relationship: "adapts"
     note: >-
       The rule kernel follows the orthodox baseline in the FIDE Laws of Chess
-      effective 1 January 2023. The selected Lean theorem is a finite
-      certificate-adequacy result over the generalized total finite record
-      model, not a characterization of which records are FIDE-legal positions.
+      effective 1 January 2023. The selected Lean theorem is a one-way
+      reachability-safety result over the generalized total finite record
+      model, not a characterization of which records are FIDE-legal positions
+      or of all records satisfying the invariant.
 
 related_formalizations:
   - id: "https://github.com/Arthur742Ramos/isabelle-afp-monorepo"
@@ -65,21 +66,22 @@ status:
     certificates, typed and strict textual FEN, UCI, canonical SAN, perft,
     rank-reflection symmetry, concrete standard perft regressions, and the
     Isabelle mate-in-two witness. The capstone theorem advertises
-    `Chess.mateCertificate_rules_adequate`: a sound-and-complete finite
-    certificate language for bounded forced mate with an explicit terminal
-    policy. The full-rule `Chess.legalMoves_correct` generator correspondence
-    is a proved internal foundation, and the concrete result families are
-    checked separately.
-    `positionInvariant` is available as a structural safety predicate, but it
-    is not a hypothesis of the selected theorem and is not a characterization
-    of reachability. The Challenge and Solution expose the complete production
-    move/state core, including castling and en passant. This is a faithful
-    standalone reimplementation rather than a line-by-line translation: not
-    every theorem name or generic proof inventory in the Isabelle entry is
-    duplicated, and the exact unbounded dead-position predicate remains a
-    logical definition separate from executable policy evaluation.
+    `Chess.reachable_positionInvariant`: induction over legal transitions proves
+    that every reachable position has one king of each colour, no pawn on a
+    promotion rank, consistent active castling rights, and a positive fullmove
+    clock. The full-rule `Chess.legalMoves_correct` generator correspondence
+    and the finite certificate-adequacy theorem are proved internal results,
+    while the concrete result families are checked separately.
+    `positionInvariant` is the safety predicate concluded by the selected
+    theorem; the theorem is one-way and does not characterize reachability.
+    The Challenge and Solution expose the complete production move/state core,
+    including castling and en passant. This is a faithful standalone
+    reimplementation rather than a line-by-line translation: not every theorem
+    name or generic proof inventory in the Isabelle entry is duplicated, and
+    the exact unbounded dead-position predicate remains a logical definition
+    separate from executable policy evaluation.
   # Counts cover the completed proof development; Challenge.lean's deliberate
-  # comparison hole is excluded.
+  # comparison holes are excluded.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -121,14 +123,14 @@ fidelity:
     The Lean implementation preserves the modeled orthodox-rule state and
     rule scope but reorganizes the thirty Isabelle theories into cohesive Lean
     modules. It uses Boolean evaluators for executable checking and proposition
-    wrappers for exact logical statements. The selected certificate-adequacy
-    theorem is intentionally stated over generalized Position records and an
-    explicit terminal policy; it does not assume `positionInvariant` or
-    reachability and therefore does not claim that every represented record is
-    an orthodox legal position. The current port proves the finite rule-level
-    certificate soundness/completeness result and separately exposes the
-    history-aware checker; it does not claim one-for-one Lean counterparts for
-    every Isabelle invariant-preservation or symmetry transport lemma.
+    wrappers for exact logical statements. The selected reachability theorem
+    is stated over generalized Position records and concludes a structural
+    invariant only under reachability; it does not claim that every represented
+    record is an orthodox legal position or that every invariant record is
+    reachable. The current port also proves the finite rule-level certificate
+    soundness/completeness result and separately exposes the history-aware
+    checker; it does not claim one-for-one Lean counterparts for every Isabelle
+    invariant-preservation or symmetry transport lemma.
 
 review:
   status: "self-assessed with clean-build and independent-comparator checks"
@@ -138,15 +140,27 @@ review:
     - "Ruy J. G. B. de Queiroz"
   notes: >-
     Review covers source-to-module alignment, executable special-move cases,
-    standard perft values, parser/printer boundaries, both soundness and
-    constructive certificate completeness, metadata, pinned manifests, and
-    Palomar structural checks.
+    standard perft values, parser/printer boundaries, the legal-transition
+    invariant proof, certificate soundness and constructive completeness,
+    metadata, pinned manifests, and Palomar structural checks.
     The formalization should still receive Palomar's normal editorial and
     independent mathematical review after intake.
 
 alignment:
   namespace: "Chess"
   statements:
+    - source: "Chess_History.reachable_position_invariant"
+      lean: "Chess.reachable_positionInvariant"
+      module: "Chess/Invariant.lean; Challenge.lean / Solution.lean"
+      status: "proved"
+      note: >-
+        Every position reachable from `initialPosition` through the modeled
+        legal-transition relation satisfies `positionInvariant`: exactly one
+        king per colour, no pawn on a promotion rank, consistent active
+        castling rights, and positive fullmove clock. The proof handles normal,
+        promotion, en-passant, and castling transitions and then applies
+        reflexive-transitive induction. It is a one-way safety theorem, not a
+        completeness characterization of reachability.
     - source: "Lean rule-kernel extension: finite mate-certificate adequacy"
       lean: "Chess.mateCertificate_rules_adequate"
       module: "Chess/Certificates.lean; Challenge.lean / Solution.lean"
